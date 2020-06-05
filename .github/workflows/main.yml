@@ -1,10 +1,6 @@
 name: build CI
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
 
 
 jobs:
@@ -44,7 +40,7 @@ jobs:
         run: poetry install
 
       - name: Run complete test suite
-        run: poetry run pytest
+        run: poetry run py.test -s -vvv --flake8 packratt/
 
 
   deploy:
