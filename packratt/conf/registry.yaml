@@ -1,0 +1,11 @@
+qux:
+  type: google
+  file_id: '123456'
+  hash: '123456'
+  filename: qux.ms.tar.gz
+
+baz:
+  type: url
+  url: "http://www.google.com"
+  hash: '123456'
+  filename: baz.ms.tar.gz
