@@ -37,7 +37,7 @@ jobs:
         run: poetry config virtualenvs.in-project false
 
       - name: Install Python Dependencies
-        run: poetry install
+        run: poetry install -E testing
 
       - name: Run complete test suite
         run: poetry run py.test -s -vvv --flake8 packratt/
