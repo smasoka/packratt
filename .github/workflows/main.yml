@@ -50,6 +50,40 @@ jobs:
       github.event_name == 'push' &&
       (startsWith(github.event.ref, 'refs/tags') ||
        github.event.ref == 'refs/heads/master')
-
     steps:
-      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install latest setuptools, wheel, pip
+        run: python3 -m pip install -U pip setuptools wheel
+
+      - name: Install dephell
+        run: curl -L dephell.org/install | python3
+
+      - name: Checkout source
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Convert pyproject.toml to setup.py
+        run: dephell deps convert --from=pyproject.toml --to=setup.py
+
+      - name: Build distributions
+        run: python setup.py sdist bdist_wheel
+
+      - name: Publish distribution 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.test_pypi_token }}
+          repository_url: https://test.pypi.org/legacy/
+        continue-on-error: true
+
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_token }}
