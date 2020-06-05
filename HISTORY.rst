@@ -2,6 +2,6 @@
 History
 =======
 
-X.Y.Z (YYYY-MM-DD)
+0.1.0 (2020-06-05)
 ------------------
-* Initial release
+* Initial release on PyPI
