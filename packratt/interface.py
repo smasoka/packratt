@@ -27,7 +27,7 @@ def get(key, destination, entry=None):
         try:
             entry = cache[key]
         except KeyError:
-            raise ValueError("%s is not in the registry")
+            raise ValueError("%s is not in the registry" % key)
     elif isinstance(entry, dict):
         validate_entry(entry)
         entry = cache.get(key, entry)
@@ -45,16 +45,15 @@ def get(key, destination, entry=None):
         # Create the destination directory
         destination.mkdir(parents=True, exist_ok=True)
 
-    filename = entry['dir'] / entry['filename']
+    filename = entry['dir'] / Path(key).name
 
     if filename.exists():
-        log.info("%s already downloaded", filename)
         # TODO(sjperkins):
         # This is a massive assumption, what about partial downloads etc.
         md5_hash = entry['hash']
     else:
         # Download to the destination
-        md5_hash = downloaders(entry['type'], entry)
+        md5_hash = downloaders(entry['type'], key, entry)
 
         if not md5_hash == entry['hash']:
             raise ValueError("md5hash does not agree. %s vs %s"
