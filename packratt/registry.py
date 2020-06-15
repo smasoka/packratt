@@ -32,11 +32,12 @@ def load_registry(filename=None):
         path = Path(Path(packratt.__file__).parent,
                     "conf", "registry.yaml")
 
-        if USER_REGISTRY.is_file():
-            path = USER_REGISTRY
-
     with open(path, "r") as f:
         registry = yaml.safe_load(f)
+
+    if USER_REGISTRY.is_file():
+        with open(USER_REGISTRY, "r") as f:
+            registry.append(yaml.safe_load(f))
 
     validate(registry, schema=REGISTRY_SCHEMA)
 
