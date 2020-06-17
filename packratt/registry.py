@@ -37,7 +37,7 @@ def load_registry(filename=None):
 
     if USER_REGISTRY.is_file():
         with open(USER_REGISTRY, "r") as f:
-            registry.append(yaml.safe_load(f))
+            registry.update(yaml.safe_load(f))
 
     validate(registry, schema=REGISTRY_SCHEMA)
 

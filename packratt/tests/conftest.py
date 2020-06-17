@@ -1,5 +1,5 @@
 from packratt.cache import get_cache, set_cache, Cache
-from packratt.registry import load_registry
+import packratt.registry as this_registry
 
 import pytest
 import yaml
@@ -26,7 +26,8 @@ def test_cache(tmp_path_factory):
 
 
 content = '''\
-'/test/ms/2020-06-04/google/smallest_ms.tar.gz':
+'/test/ms/2020-06-04/google/test_ms.tar.gz':
+  type: google
   file_id: 1wjZoh7OAIVEjYuTmg9dLAFiLoyehnIcL
   hash: 4d548b22331fb3cd3256b1b4f37a41cf
   description: >
@@ -38,9 +39,14 @@ content = '''\
 def registry(tmp_path_factory):
 
     user_conf_path = tmp_path_factory.mktemp("conf")
-    USER_REGISTRY = user_conf_path / "registry.yaml"
-    CONTENT = yaml.dump(content)
-    USER_REGISTRY.write_text(CONTENT)
-    assert USER_REGISTRY.read_text() == CONTENT
+    this_registry.USER_REGISTRY = user_conf_path / "registry.yaml"
+    CONTENT = yaml.safe_load(content)
+    with open(this_registry.USER_REGISTRY, 'w') as f:
+        yaml.dump(CONTENT, f)
 
-    return load_registry()
+    with open(this_registry.USER_REGISTRY, 'r') as f:
+        user_regis = yaml.safe_load(f)
+
+    assert user_regis == CONTENT
+
+    return this_registry.load_registry()
