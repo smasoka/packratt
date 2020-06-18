@@ -21,24 +21,36 @@ ENTRY_SCHEMA = {**SCHEMA, "entry": {"type": {"$ref": "/definitions/entry"}}}
 
 del SCHEMA_PATH
 
-# user defined registry
+
 USER_REGISTRY = Path(user_config_dir, "registry.yaml")
+
+
+def load_user_registry():
+    with open(USER_REGISTRY, "r") as f:
+        registry = yaml.safe_load(f)
+
+    validate(registry, schema=REGISTRY_SCHEMA)
+
+    return registry
+
+
+def load_default_registry():
+    path = Path(Path(packratt.__file__).parent, "conf", "registry.yaml")
+
+    with open(path, "r") as f:
+        registry = yaml.safe_load(f)
+
+    validate(registry, schema=REGISTRY_SCHEMA)
+
+    return registry
 
 
 def load_registry(filename=None):
 
     if filename is None:
-
-        path = Path(Path(packratt.__file__).parent,
-                    "conf", "registry.yaml")
-
-    with open(path, "r") as f:
-        registry = yaml.safe_load(f)
+        registry = load_default_registry()
 
     if USER_REGISTRY.is_file():
-        with open(USER_REGISTRY, "r") as f:
-            registry.update(yaml.safe_load(f))
-
-    validate(registry, schema=REGISTRY_SCHEMA)
+        registry.update(load_user_registry())
 
     return registry

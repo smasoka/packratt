@@ -1,8 +1,12 @@
 from packratt.cache import get_cache, set_cache, Cache
-import packratt.registry as this_registry
+from packratt.registry import load_registry, load_user_registry
+from packratt.directories import user_config_dir
 
+from unittest.mock import patch, mock_open
 import pytest
 import yaml
+
+from pathlib import Path
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -35,18 +39,21 @@ content = '''\
 '''
 
 
+@pytest.fixture(scope="session", autouse=True)
+def user_registry():
+    CONTENT = yaml.safe_load(content)
+    USER_REGISTRY = Path(user_config_dir, "registry.yaml")
+
+    with patch('builtins.open', new_callable=mock_open(read_data=content))\
+            as m:
+        with patch('yaml.safe_load', return_value=CONTENT):
+            reg = load_user_registry()
+
+    m.assert_called_with(USER_REGISTRY, 'r')
+    assert reg == CONTENT
+
+
 @pytest.fixture(scope="session")
 def registry(tmp_path_factory):
 
-    user_conf_path = tmp_path_factory.mktemp("conf")
-    this_registry.USER_REGISTRY = user_conf_path / "registry.yaml"
-    CONTENT = yaml.safe_load(content)
-    with open(this_registry.USER_REGISTRY, 'w') as f:
-        yaml.dump(CONTENT, f)
-
-    with open(this_registry.USER_REGISTRY, 'r') as f:
-        user_regis = yaml.safe_load(f)
-
-    assert user_regis == CONTENT
-
-    return this_registry.load_registry()
+    return load_registry()
