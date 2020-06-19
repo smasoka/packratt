@@ -29,31 +29,21 @@ def test_cache(tmp_path_factory):
         set_cache(old_cache)
 
 
-content = '''\
-'/test/ms/2020-06-04/google/test_ms.tar.gz':
-  type: google
-  file_id: 1wjZoh7OAIVEjYuTmg9dLAFiLoyehnIcL
-  hash: 4d548b22331fb3cd3256b1b4f37a41cf
-  description: >
-    Small testing Measurement Set, stored on Google Drive
-'''
-
-
-@pytest.fixture(scope="session", autouse=True)
-def user_registry():
-    CONTENT = yaml.safe_load(content)
-    USER_REGISTRY = Path(user_config_dir, "registry.yaml")
-
-    with patch('builtins.open', new_callable=mock_open(read_data=content))\
-            as m:
-        with patch('yaml.safe_load', return_value=CONTENT):
-            reg = load_user_registry()
-
-    m.assert_called_with(USER_REGISTRY, 'r')
-    assert reg == CONTENT
-
+USER_REGISTRY_CONTENT = {
+    '/test/ms/2020-06-04/google/test_user_registry_ms.tar.gz': {
+        'type': 'google',
+        'file_id': '1wjZoh7OAIVEjYuTmg9dLAFiLoyehnIcL',
+        'hash': '4d548b22331fb3cd3256b1b4f37a41cf',
+        'description': 'Small testing Measurement Set, stored on Google Drive',
+    }
+}
 
 @pytest.fixture(scope="session")
 def registry(tmp_path_factory):
+    conf = tmp_path_factory.mktemp('conf') /  "registry.yaml"
 
-    return load_registry()
+    with open(conf, "w") as f:
+        f.write(yaml.safe_dump(USER_REGISTRY_CONTENT))
+
+    with patch('packratt.registry.USER_REGISTRY', conf):
+        return load_registry()
