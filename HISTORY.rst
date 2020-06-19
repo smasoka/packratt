@@ -4,6 +4,7 @@ History
 
 X.Y.Z (YYYY-MM-DD)
 ------------------
+* Updated registry to allow user defined registry.yaml (:pr: `8`)
 * Support basic resumable downloads (:pr:`5`)
 * Github CI Actions (:pr:`4`)
 * Add a setup.py so that non-poetry development installs are possible (:pr:`3`)
