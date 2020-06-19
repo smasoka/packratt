@@ -25,32 +25,16 @@ del SCHEMA_PATH
 USER_REGISTRY = Path(user_config_dir, "registry.yaml")
 
 
-def load_user_registry():
-    with open(USER_REGISTRY, "r") as f:
-        registry = yaml.safe_load(f)
-
-    validate(registry, schema=REGISTRY_SCHEMA)
-
-    return registry
-
-
-def load_default_registry():
+def load_registry(filename=None):
     path = Path(Path(packratt.__file__).parent, "conf", "registry.yaml")
 
     with open(path, "r") as f:
         registry = yaml.safe_load(f)
 
-    validate(registry, schema=REGISTRY_SCHEMA)
-
-    return registry
-
-
-def load_registry(filename=None):
-
-    if filename is None:
-        registry = load_default_registry()
-
     if USER_REGISTRY.is_file():
-        registry.update(load_user_registry())
+        with open(USER_REGISTRY, "r") as f:
+            registry.update(yaml.safe_load(f))
+
+    validate(registry, schema=REGISTRY_SCHEMA)
 
     return registry

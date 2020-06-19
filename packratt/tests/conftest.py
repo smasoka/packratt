@@ -1,12 +1,9 @@
 from packratt.cache import get_cache, set_cache, Cache
-from packratt.registry import load_registry, load_user_registry
-from packratt.directories import user_config_dir
+from packratt.registry import load_registry
 
-from unittest.mock import patch, mock_open
+from unittest.mock import patch
 import pytest
 import yaml
-
-from pathlib import Path
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -38,9 +35,10 @@ USER_REGISTRY_CONTENT = {
     }
 }
 
+
 @pytest.fixture(scope="session")
 def registry(tmp_path_factory):
-    conf = tmp_path_factory.mktemp('conf') /  "registry.yaml"
+    conf = tmp_path_factory.mktemp('conf') / "registry.yaml"
 
     with open(conf, "w") as f:
         f.write(yaml.safe_dump(USER_REGISTRY_CONTENT))
