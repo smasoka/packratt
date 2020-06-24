@@ -65,7 +65,7 @@ def requests_partial_download(key, entry, url, session,
             headers = {'Range': 'bytes=%d-%d' % (size, total_size)}
             response = session.get(url, params=params,
                                    headers=headers, stream=True)
-        
+
         if response.status_code != 416:
             try:
                 response.raise_for_status()
