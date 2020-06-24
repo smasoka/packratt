@@ -65,11 +65,17 @@ def requests_partial_download(key, entry, url, session,
             headers = {'Range': 'bytes=%d-%d' % (size, total_size)}
             response = session.get(url, params=params,
                                    headers=headers, stream=True)
+        
+        if response.status_code != 416:
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                raise Exception(e)
 
-        for chunk in response.iter_content(CHUNK_SIZE):
-            if chunk:  # filter out keep-alive new chunks
-                md5hash.update(chunk)
-                f.write(chunk)
+            for chunk in response.iter_content(CHUNK_SIZE):
+                if chunk:  # filter out keep-alive new chunks
+                    md5hash.update(chunk)
+                    f.write(chunk)
 
     shutil.move(part_filename, filename)
     return md5hash.hexdigest()
