@@ -1,48 +1,55 @@
-# packratt
+packratt
+========
 
-`packratt` is an application and a python package for downloading and caching Radio Astronomy products, primarily to facilitate testing Radio Astronomy software.
+``packratt`` is an application and a python package for downloading and
+caching Radio Astronomy products, primarily to facilitate testing Radio
+Astronomy software.
 
-## Installing
+Installing
+----------
 
 For the lastest stable release
 
-```bash
-$ pip install packratt
-```
+.. code:: bash
 
-## Usage
+   $ pip install packratt
+
+Usage
+-----
 
 Use an an linux application
 
-```bash
-packratt ....
-```
+.. code:: bash
+
+   packratt ....
 
 Use as a Python software package
 
-```python
-import packratt
+.. code:: python
 
-packratt.get("")
-packratt.get("")
-packratt.get("") 
-```
+   import packratt
 
-### Registry schemas
+   packratt.get("")
+   packratt.get("")
+   packratt.get("") 
 
-schemas are defined by a yaml registry file 
+Registry schemas
+~~~~~~~~~~~~~~~~
 
-```yaml
+schemas are defined by a yaml registry file
 
-```
+.. code:: yaml
 
-Users can define their registry file and place them under `/home/username/.packratt/registry.yaml`
+Users can define their registry file and place them under
+``/home/username/.packratt/registry.yaml``
 
+Contributing
+------------
 
-## Contributing
+To contribute, please adhere to
+`pep8 <https://www.python.org/dev/peps/pep-0008/>`__ coding standards
 
-To contribute, please adhere to [pep8](https://www.python.org/dev/peps/pep-0008/) coding standards
+License
+-------
 
-## License
-
-[LICENSE](LICENSE)
+`LICENSE <LICENSE>`__
