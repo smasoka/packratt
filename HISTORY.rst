@@ -4,6 +4,7 @@ History
 
 X.Y.Z (YYYY-MM-DD)
 ------------------
+* Use HTTPAdapter with retry strategy (:pr: `6`)
 * Updated registry to allow user defined registry.yaml (:pr: `8`)
 * Support basic resumable downloads (:pr:`5`)
 * Github CI Actions (:pr:`4`)
