@@ -7,6 +7,8 @@ import shutil
 from urllib.parse import urlparse
 
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 from packratt.dispatch import Dispatch
 
@@ -16,6 +18,24 @@ downloaders = Dispatch()
 
 # 32k chunks
 CHUNK_SIZE = 2**15
+
+
+@contextmanager
+def retry_strategy():
+    retry = Retry(
+        total=5,
+        status_forcelist=[413, 429, 500, 502, 503, 504],
+        method_whitelist=["HEAD", "GET", "OPTIONS"]
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session = requests.Session()
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+
+    try:
+        yield session
+    finally:
+        session.close()
 
 
 @contextmanager
@@ -66,10 +86,16 @@ def requests_partial_download(key, entry, url, session,
             response = session.get(url, params=params,
                                    headers=headers, stream=True)
 
-        for chunk in response.iter_content(CHUNK_SIZE):
-            if chunk:  # filter out keep-alive new chunks
-                md5hash.update(chunk)
-                f.write(chunk)
+        if response.status_code != 416:
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                raise Exception(e)
+
+            for chunk in response.iter_content(CHUNK_SIZE):
+                if chunk:  # filter out keep-alive new chunks
+                    md5hash.update(chunk)
+                    f.write(chunk)
 
     shutil.move(part_filename, filename)
     return md5hash.hexdigest()
@@ -80,7 +106,7 @@ def download_google_drive(key, entry):
     url = "https://drive.google.com/uc?export=download"
     params = {'id': entry['file_id']}
 
-    with requests.Session() as session:
+    with retry_strategy() as session:
         response = session.get(url, params=params, stream=True)
 
         try:
@@ -135,12 +161,12 @@ def download_url(key, entry):
     if parsed_url.scheme == "ftp":
         return download_ftp(key, entry, parsed_url)
 
-    # Use requests for (presumably) http cases
-    with requests.Session() as session:
-        response = session.get(entry['url'], stream=True)
+        # Use requests for (presumably) http cases
+        with retry_strategy() as session:
+            response = session.get(entry['url'], stream=True)
 
-        try:
-            return requests_partial_download(key, entry, entry['url'],
-                                             session, response)
-        finally:
-            response.close()
+            try:
+                return requests_partial_download(key, entry, entry['url'],
+                                                 session, response)
+            finally:
+                response.close()
