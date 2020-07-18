@@ -31,8 +31,8 @@ def get(key, destination, entry=None):
     elif isinstance(entry, dict):
         validate_entry(entry)
         set_cache(cache)
-        cache.set(key, entry)
-        entry = cache.get(key)
+        cache.set_cache_entry(key, entry)
+        entry = cache.get_cache_entry(key)
     else:
         raise TypeError("entry must be None or dict")
 

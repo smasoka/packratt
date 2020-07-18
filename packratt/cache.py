@@ -90,7 +90,7 @@ class Cache(metaclass=CacheMetaClass):
         with open(entry_dir / "entry.yaml", "w") as f:
             f.write(yaml.safe_dump(value))
 
-    def set(self, key, entry):
+    def set_cache_entry(self, key, entry):
         self.__setitem__(key, entry)
 
     def __getitem__(self, key):
@@ -130,7 +130,7 @@ class Cache(metaclass=CacheMetaClass):
 
         return entry
 
-    def get(self, key):
+    def get_cache_entry(self, key):
         return self.__getitem__(key)
 
 
