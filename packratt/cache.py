@@ -90,6 +90,9 @@ class Cache(metaclass=CacheMetaClass):
         with open(entry_dir / "entry.yaml", "w") as f:
             f.write(yaml.safe_dump(value))
 
+    def set(self, key, entry):
+        self.__setitem__(key, entry)
+
     def __getitem__(self, key):
         """
         Retrieves a cache entry
@@ -126,6 +129,9 @@ class Cache(metaclass=CacheMetaClass):
         entry['dir'] = entry_dir
 
         return entry
+
+    def get(self, key):
+        return self.__getitem__(key)
 
 
 def cache_factory(cache_dir=None):

@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import shutil
 
-from packratt.cache import validate_entry, get_cache
+from packratt.cache import validate_entry, cache_factory, get_cache, set_cache
 from packratt.downloads import downloaders
 
 log = logging.getLogger(__name__)
@@ -30,7 +30,9 @@ def get(key, destination, entry=None):
             raise ValueError("%s is not in the registry" % key)
     elif isinstance(entry, dict):
         validate_entry(entry)
-        entry = cache.get(key, entry)
+        set_cache(cache)
+        cache.set(key, entry)
+        entry = cache.get(key)
     else:
         raise TypeError("entry must be None or dict")
 

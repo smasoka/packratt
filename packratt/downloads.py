@@ -112,16 +112,16 @@ def download_google_drive(key, entry):
         try:
             # Look for a token indicating a large file
             # Re-request with confirmation token
-            for key, value in response.cookies.items():
-                if key.startswith('download_warning'):
-                    params['confim'] = value
+            for k, v in response.cookies.items():
+                if k.startswith('download_warning'):
+                    params['confirm'] = v
                     response.close()
                     response = session.get(url, params=params, stream=True)
                     break
 
             return requests_partial_download(key, entry, url,
-                                             session, response,
-                                             params=params)
+                                            session, response,
+                                            params=params)
         finally:
             response.close()
 
