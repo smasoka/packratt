@@ -59,7 +59,7 @@ schemas are defined by a yaml registry file. E.g
        Small testing Measurement Set, stored on elwood's FTP server
 
 Users can define their registry file and place them under
-``$HOME/.conf/packratt/registry.yaml``
+``$HOME/.config/packratt/registry.yaml``
 
 Contributing
 ------------
