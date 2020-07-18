@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import shutil
 
-from packratt.cache import validate_entry, cache_factory, get_cache, set_cache
+from packratt.cache import validate_entry, get_cache, set_cache
 from packratt.downloads import downloaders
 
 log = logging.getLogger(__name__)

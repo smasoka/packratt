@@ -120,8 +120,8 @@ def download_google_drive(key, entry):
                     break
 
             return requests_partial_download(key, entry, url,
-                                            session, response,
-                                            params=params)
+                                             session, response,
+                                             params=params)
         finally:
             response.close()
 
