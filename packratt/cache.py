@@ -90,7 +90,6 @@ class Cache(metaclass=CacheMetaClass):
         with open(entry_dir / "entry.yaml", "w") as f:
             f.write(yaml.safe_dump(value))
 
-
     def __getitem__(self, key):
         """
         Retrieves a cache entry
