@@ -47,14 +47,14 @@ schemas are defined by a yaml registry file. E.g
    '/test/ms/2020-06-04/google/smallest_ms.tar.gz':
      type: google
      file_id: 1wjZoh7OAIVEjYuTmg9dLAFiLoyehnIcL
-     hash: 4d548b22331fb3cd3256b1b4f37a41cf
+     hash: 9d6379b5ad01a1fe6ec218d4e58e4620fa80ff9820f4f54bf185d86496f3456c
      description: >
        Small testing Measurement Set, stored on Google Drive
 
    '/test/ms/2020-06-04/elwood/smallest_ms.tar.gz':
      type: url
      url: ftp://elwood.ru.ac.za/pub/sjperkins/data/test/smallest_ms.tar.gz
-     hash: 4d548b22331fb3cd3256b1b4f37a41cf
+     hash: 9d6379b5ad01a1fe6ec218d4e58e4620fa80ff9820f4f54bf185d86496f3456c
      description: >
        Small testing Measurement Set, stored on elwood's FTP server
 
