@@ -5,6 +5,20 @@ import pytest
 import shutil
 
 
+@pytest.mark.skip
+@pytest.mark.parametrize(
+    "google_key", ['1.5M_water.tar.gz'])
+def test_get_entry(google_key, tmp_path_factory):
+    entry = {"type": 'google',
+             "file_id": '1D62EwpZOL7I5MBVh5sskj7w9e-YaCSzX',
+             "hash": '2acf32e159ed6076130d4c2680eca155',
+             "description": '1.5M water'}
+    google_entry_dest = tmp_path_factory.mktemp("google")
+    google_entry_md5 = get(google_key, google_entry_dest, entry=entry)
+
+    assert google_entry_md5 == entry['hash']
+
+
 @pytest.mark.parametrize(
     "elwood_key", ['/test/ms/2020-06-04/elwood/smallest_ms.tar.gz'])
 @pytest.mark.parametrize(
