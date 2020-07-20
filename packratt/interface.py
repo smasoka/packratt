@@ -30,9 +30,9 @@ def get(key, destination, entry=None):
             raise ValueError("%s is not in the registry" % key)
     elif isinstance(entry, dict):
         validate_entry(entry)
+        cache[key] = entry
         set_cache(cache)
-        cache.set_cache_entry(key, entry)
-        entry = cache.get_cache_entry(key)
+        entry = cache[key]
     else:
         raise TypeError("entry must be None or dict")
 
