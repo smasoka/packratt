@@ -1,4 +1,5 @@
 import logging
+import hashlib
 from pathlib import Path
 import shutil
 
@@ -6,6 +7,12 @@ from packratt.cache import validate_entry, get_cache, set_cache
 from packratt.downloads import downloaders
 
 log = logging.getLogger(__name__)
+
+CHUNK_SIZE = 2**15
+
+
+def check_sha256(sha256_hash, entry):
+    return sha256_hash == entry['hash']
 
 
 def get(key, destination, entry=None):
@@ -20,7 +27,7 @@ def get(key, destination, entry=None):
         dictionary entry describing the data product, if not in the registry.
         Defaults to None in which case the entry must be in the registry.
     """
-
+    DOWNLOAD = True
     cache = get_cache()
 
     if entry is None:
@@ -50,14 +57,19 @@ def get(key, destination, entry=None):
     filename = entry['dir'] / Path(key).name
 
     if filename.exists():
-        # TODO(sjperkins):
-        # This is a massive assumption, what about partial downloads etc.
-        sha256_hash = entry['hash']
-    else:
-        # Download to the destination
+        file_hash = hashlib.sha256()
+        with open(filename, "rb") as f:
+            for block in iter(lambda: f.read(CHUNK_SIZE), b""):
+                file_hash.update(block)
+
+        if check_sha256(file_hash.hexdigest(), entry):
+            DOWNLOAD = False
+            sha256_hash = file_hash.hexdigest()  # or entry['hash']
+
+    if DOWNLOAD:
         sha256_hash = downloaders(entry['type'], key, entry)
 
-        if not sha256_hash == entry['hash']:
+        if not check_sha256(sha256_hash, entry):
             raise ValueError("sha256hash does not agree. %s vs %s"
                              % (sha256_hash, entry['hash']))
 
