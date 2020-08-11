@@ -1,5 +1,4 @@
 import logging
-import hashlib
 from pathlib import Path
 import shutil
 
@@ -27,7 +26,6 @@ def get(key, destination, entry=None):
         dictionary entry describing the data product, if not in the registry.
         Defaults to None in which case the entry must be in the registry.
     """
-    DOWNLOAD = True
     cache = get_cache()
 
     if entry is None:
@@ -57,19 +55,14 @@ def get(key, destination, entry=None):
     filename = entry['dir'] / Path(key).name
 
     if filename.exists():
-        file_hash = hashlib.sha256()
-        with open(filename, "rb") as f:
-            for block in iter(lambda: f.read(CHUNK_SIZE), b""):
-                file_hash.update(block)
-
-        if check_sha256(file_hash.hexdigest(), entry):
-            DOWNLOAD = False
-            sha256_hash = file_hash.hexdigest()  # or entry['hash']
-
-    if DOWNLOAD:
+        # TODO(sjperkins):
+        # This is a massive assumption, what about partial downloads etc.
+        sha256_hash = entry['hash']
+    else:
+        # Download to the destination
         sha256_hash = downloaders(entry['type'], key, entry)
 
-        if not check_sha256(sha256_hash, entry):
+        if not sha256_hash == entry['hash']:
             raise ValueError("sha256hash does not agree. %s vs %s"
                              % (sha256_hash, entry['hash']))
 

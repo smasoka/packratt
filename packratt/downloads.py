@@ -80,9 +80,17 @@ def requests_partial_download(key, entry, url, session,
             log.info("Resuming download of %s at %d", filename, size)
             # Some of this file has already been downloaded
             # Request the rest of it
-            total_size = int(response.headers['Content-Length'])
+            is_chunked = (response.headers.get('transfer-encoding', '')
+                          == 'chunked')
+            content_length = response.headers.get('content-length')
+
+            if not is_chunked and content_length.isdigit():
+                total_size = int(content_length)
+                headers = {'Range': 'bytes=%d-%d' % (size, total_size)}
+            else:
+                headers = None
+
             response.close()
-            headers = {'Range': 'bytes=%d-%d' % (size, total_size)}
             response = session.get(url, params=params,
                                    headers=headers, stream=True)
 
