@@ -20,6 +20,10 @@ downloaders = Dispatch()
 CHUNK_SIZE = 2**15
 
 
+class FileHashMismatch(ValueError):
+    pass
+
+
 @contextmanager
 def retry_strategy():
     retry = Retry(
@@ -80,9 +84,18 @@ def requests_partial_download(key, entry, url, session,
             log.info("Resuming download of %s at %d", filename, size)
             # Some of this file has already been downloaded
             # Request the rest of it
-            total_size = int(response.headers['Content-Length'])
+            log.info(response.headers)
+            is_chunked = (response.headers.get('transfer-encoding', '')
+                          == 'chunked')
+            content_length = response.headers.get('Content-Length')
+
+            if not is_chunked and content_length.isdigit():
+                total_size = int(content_length)
+                headers = {'Range': 'bytes=%d-%d' % (size, total_size)}
+            else:
+                headers = {'Range': 'bytes=%d-' % size}
+
             response.close()
-            headers = {'Range': 'bytes=%d-%d' % (size, total_size)}
             response = session.get(url, params=params,
                                    headers=headers, stream=True)
 
@@ -98,7 +111,12 @@ def requests_partial_download(key, entry, url, session,
                     f.write(chunk)
 
     shutil.move(part_filename, filename)
-    return sha256hash.hexdigest()
+    sha256hash = sha256hash.hexdigest()
+
+    if sha256hash != entry['hash']:
+        raise FileHashMismatch(f"{sha256hash} does't match {entry['hash']}")
+
+    return sha256hash
 
 
 @downloaders.register("google")
