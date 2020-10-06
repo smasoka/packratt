@@ -2,7 +2,7 @@
 History
 =======
 
-X.Y.Z (YYYY-MM-DD)
+0.1.2 (2020-10-06)
 ------------------
 * Use SHA256 instead of MD5 for verifying file integrity (:pr:`12`)
 * Add README file (:pr: `11`) and minor fixes
