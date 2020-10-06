@@ -7,6 +7,12 @@ from packratt.downloads import downloaders
 
 log = logging.getLogger(__name__)
 
+CHUNK_SIZE = 2**15
+
+
+def check_sha256(sha256_hash, entry):
+    return sha256_hash == entry['hash']
+
 
 def get(key, destination, entry=None):
     """
@@ -20,7 +26,6 @@ def get(key, destination, entry=None):
         dictionary entry describing the data product, if not in the registry.
         Defaults to None in which case the entry must be in the registry.
     """
-
     cache = get_cache()
 
     if entry is None:
